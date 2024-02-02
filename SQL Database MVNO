@@ -1,0 +1,652 @@
+DROP DATABASE IF EXISTS MVNO;
+
+CREATE DATABASE MVNO;
+
+-- Use the Database
+USE MVNO;
+
+-- Users
+CREATE TABLE Users (
+    User_ID INTEGER PRIMARY KEY,
+    First_name VARCHAR(100),
+    Last_name VARCHAR(100),
+    Country VARCHAR(100),
+    City VARCHAR(100),
+    Post_Code VARCHAR(20),
+    Email VARCHAR(100),
+    Join_Date DATE,
+    Plan_ID INTEGER,
+    Occupation VARCHAR(100),
+    Age INTEGER,
+    Cellphone_Number VARCHAR(15)
+);
+
+-- Plans
+CREATE TABLE Plans (
+    Plan_ID INTEGER PRIMARY KEY,
+    Plan_Name VARCHAR(50),
+    Data_Allowance INTEGER,
+    Talk_Time INTEGER,
+    Texts INTEGER,
+    Price DECIMAL(10, 2)
+);
+
+-- Top-Up Transaction
+CREATE TABLE TopUpTransactions (
+    Transaction_ID INTEGER PRIMARY KEY,
+    User_ID INTEGER,
+    Amount DECIMAL(10, 2),
+    Date DATE,
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+);
+
+-- Call Record
+CREATE TABLE CallRecords (
+    Call_ID INTEGER PRIMARY KEY,
+    Caller_Number VARCHAR(15),
+    Receiver_Number VARCHAR(15),
+    Call_Duration INTEGER,
+    Call_Date DATE
+);
+
+-- Message Record
+CREATE TABLE MessageRecords (
+    Message_ID INTEGER PRIMARY KEY,
+    Sender_Number VARCHAR(15),
+    Receiver_Number VARCHAR(15),
+    Message_Date DATE
+);
+
+-- Network Tower
+CREATE TABLE NetworkTowers (
+    Tower_ID INTEGER PRIMARY KEY,
+    Location VARCHAR(100),
+    Capacity INTEGER,
+    Status VARCHAR(20)
+);
+
+-- Cancellation Reasons
+CREATE TABLE CancellationReasons (
+    Reason_ID INTEGER PRIMARY KEY,
+    Customer_ID INTEGER,  -- Foreign key to reference the customer who canceled
+    Cancellation_Date DATE,  -- Date when the cancellation occurred
+    Reason TEXT  -- Text field to describe the reason for canceling
+);
+
+-- My Data
+CREATE TABLE MyData (
+    User_ID INTEGER,
+    Data_Usage INTEGER,
+    Call_Duration INTEGER,
+    Last_Activity_Date DATE,
+    Data_Usage_Details VARCHAR(500),
+    Call_History_Details VARCHAR(500),
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+);
+-- Customer Reviews
+CREATE TABLE CustomerReviews (
+    Review_ID INTEGER AUTO_INCREMENT PRIMARY KEY,
+    User_ID INTEGER,  -- Foreign key to reference the user who wrote the review
+    Product_ID INTEGER,  -- Foreign key to reference the product being reviewed
+    Review_Text TEXT,  -- The text of the customer review
+    Review_Date DATE,  -- Date when the review was written
+    Rating INTEGER,  -- Numeric rating (e.g., on a scale of 1 to 5)
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
+);
+
+-- Create a table to track user roaming locations
+CREATE TABLE RoamingLocations (
+    Location_ID SERIAL PRIMARY KEY,
+    User_ID INTEGER,
+    Country VARCHAR(100),
+    City VARCHAR(100),
+    Latitude DECIMAL(9, 6),
+    Longitude DECIMAL(9, 6),
+    Roaming_Start TIMESTAMP,
+    Roaming_End TIMESTAMP
+);
+
+-- Insert Sample Data
+-- Users
+INSERT INTO Users (User_ID, First_name, Last_name, Country, City, Post_Code, Email, Join_Date, Plan_ID, Occupation, Age, Cellphone_Number)
+VALUES
+(1, 'John', 'Olive', 'United Kingdom', 'London', 'SW1A 1AA', 'john.doe@example.com', '2023-03-01', 1, 'Student', 18, '07900123456'),
+(2, 'Jane', 'Smith', 'United Kingdom', 'London', 'WC1E 6BT', 'jane.smith@example.com', '2023-03-02', 1, 'Student', 16, '07700987654'),
+(3, 'David', 'Johnson', 'United Kingdom', 'Birmingham', 'B1 1BB', 'david.johnson@example.com', '2023-03-03', 1, 'Student', 17, '07800567890'),
+(4, 'Maria', 'Garcia', 'United Kingdom', 'Leeds', 'LS1 1BA', 'maria.garcia@example.com', '2023-03-04', 1, 'Student', 18, '07900112233'),
+(5, 'Yusuke', 'Tanaka', 'United Kingdom', 'Glasgow', 'G1 1BG', 'yusuke.tanaka@example.com', '2023-03-05', 1, 'Student', 19, '07700665544'),
+(6, 'Sophie', 'Dupont', 'United Kingdom', 'Liverpool', 'L1 1BH', 'sophie.dupont@example.com', '2023-03-06', 1, 'Student', 19, '07800998877'),
+(7, 'Luca', 'Bianchi', 'United Kingdom', 'Bristol', 'BS1 1BJ', 'luca.bianchi@example.com', '2023-03-07', 1, 'Student', 19, '07900554433'),
+(8, 'Miguel', 'Rodriguez', 'United Kingdom', 'Sheffield', 'S1 1BK', 'miguel.rodriguez@example.com', '2023-03-08', 1, 'Student', 20, '07700111922'),
+(9, 'Anna', 'Müller', 'United Kingdom', 'Newcastle', 'NE1 1BL', 'anna.muller@example.com', '2023-03-09', 1, 'Student', 20, '07800336699'),
+(10, 'Hans', 'Svensson', 'United Kingdom', 'Cardiff', 'CF1 1BM', 'hans.svensson@example.com', '2023-03-10', 1, 'Student', 21, '07900997788'),
+(11, 'Zoe', 'Wilson', 'United Kingdom', 'Edinburgh', 'EH1 1BN', 'zoe.wilson@example.com', '2023-03-11', 1, 'Student', 25, '07700445566'),
+(12, 'Carlos', 'Martinez', 'United Kingdom', 'Nottingham', 'NG1 1BO', 'carlos.martinez@example.com', '2023-03-12', 1, 'Student', 26, '07800778899'),
+(13, 'Elena', 'Ivanova', 'United Kingdom', 'Leicester', 'LE1 1BP', 'elena.ivanova@example.com', '2023-03-13', 1, 'Student', 27, '07900556644'),
+(14, 'Samir', 'Khan', 'United Kingdom', 'London', 'WC2R 2LS', 'samir.khan@example.com', '2023-03-14', 1, 'Student', 22, '07700223344'),
+(15, 'Laura', 'Gonzalez', 'United Kingdom', 'Glasgow', 'G1 1BR', 'laura.gonzalez@example.com', '2023-03-15', 1, 'Student', 24, '07800446699'),
+(16, 'Sebastian', 'Andersson', 'United Kingdom', 'Birmingham', 'B1 1BS', 'sebastian.andersson@example.com', '2023-03-16', 1, 'Student', 23, '07900778899'),
+(17, 'Alicia', 'Silva', 'United Kingdom', 'London', 'SW1A 1BT', 'alicia.silva@example.com', '2023-03-17', 1, 'Student', 17, '07700334455'),
+(18, 'John', 'Doe', 'United Kingdom', 'Manchester', 'M1 1BU', 'john.doe@example.com', '2023-03-18', 1, 'Student', 27, '07800992233'),
+(19, 'Jane', 'Smith', 'United Kingdom', 'Leeds', 'LS1 1BV', 'jane.smith@example.com', '2023-03-19', 2, 'Student', 18, '07900221133'),
+(20, 'David', 'Johnson', 'United Kingdom', 'Edinburgh', 'EH1 1BW', 'david.johnson@example.com', '2023-03-20', 2, 'Student', 25, '07700441122'),
+(21, 'Maria', 'Garcia', 'United Kingdom', 'London', 'WC2A 2AE', 'maria.garcia@example.com', '2023-03-21', 2, 'Student', 21, '07800223344'),
+(22, 'Yusuke', 'Tanaka', 'United Kingdom', 'Birmingham', 'B1 1BY', 'yusuke.tanaka@example.com', '2023-03-22', 2, 'Student', 22, '07900778899'),
+(23, 'Sophie', 'Dupont', 'United Kingdom', 'Liverpool', 'L1 1BZ', 'sophie.dupont@example.com', '2023-03-23', 2, 'Student', 23, '07700336699'),
+(24, 'Luca', 'Bianchi', 'United Kingdom', 'Manchester', 'M1 1CA', 'luca.bianchi@example.com', '2023-03-24', 2, 'Retired', 65, '07800447777'),
+(25, 'Miguel', 'Rodriguez', 'United Kingdom', 'Bristol', 'BS1 1CB', 'miguel.rodriguez@example.com', '2023-03-25', 2, 'Business Owner', 45, '07900556644'),
+(26, 'Anna', 'Müller', 'United Kingdom', 'Sheffield', 'S1 1CC', 'anna.muller@example.com', '2023-03-26', 2, 'CFO', 40, '07700447788'),
+(27, 'Hans', 'Svensson', 'United Kingdom', 'Newcastle', 'NE1 1CD', 'hans.svensson@example.com', '2023-03-27', 2, 'Consultant', 35, '07900665544'),
+(28, 'Zoe', 'Wilson', 'United Kingdom', 'London', 'E1 1FA', 'zoe.wilson@example.com', '2023-03-28', 2, 'Retail worker', 20, '07800992233'),
+(29, 'Carlos', 'Martinez', 'United Kingdom', 'Edinburgh', 'EH1 1CF', 'carlos.martinez@example.com', '2023-03-29', 2, 'CMO', 29, '07900997788'),
+(30, 'Elena', 'Ivanova', 'United Kingdom', 'Glasgow', 'G1 1CG', 'elena.ivanova@example.com', '2023-03-30', 2, 'Politician', 60, '07700334455'),
+(31, 'Samir', 'Khan', 'United Kingdom', 'Birmingham', 'B1 1CH', 'samir.khan@example.com', '2023-03-31', 2, 'Reporter', 30, '07800221122'),
+(32, 'Laura', 'Gonzalez', 'United Kingdom', 'Liverpool', 'L1 1CI', 'laura.gonzalez@example.com', '2023-04-01', 2, 'Teacher', 40, '07900554433'),
+(33, 'Sebastian', 'Andersson', 'United Kingdom', 'Manchester', 'M1 1CJ', 'sebastian.andersson@example.com', '2023-04-02', 2, 'Musician', 25, '07700446699'),
+(34, 'Alicia', 'Silva', 'United Kingdom', 'Leeds', 'LS1 1CK', 'alicia.silva@example.com', '2023-04-03', 3, 'Business', 0, '07800778899'),
+(35, 'John', 'Doe', 'United Kingdom', 'London', 'SW1A 1CL', 'john.doe@example.com', '2023-04-04', 3, 'Business', 0, '07900997788'),
+(36, 'Jane', 'Smith', 'United Kingdom', 'Manchester', 'M1 1CM', 'jane.smith@example.com', '2023-04-05', 3, 'Business', 0, '07700665544'),
+(37, 'David', 'Johnson', 'United Kingdom', 'Birmingham', 'B1 1CN', 'david.johnson@example.com', '2023-04-06', 3, 'Business', 0, '07800447777'),
+(38, 'Maria', 'Garcia', 'United Kingdom', 'Leeds', 'LS1 1CO', 'maria.garcia@example.com', '2023-04-07', 3, 'Business', 0, '07900221133'),
+(39, 'Yusuke', 'Tanaka', 'United Kingdom', 'Glasgow', 'G1 1CP', 'yusuke.tanaka@example.com', '2023-04-08', 3, 'Business', 0, '07700336699'),
+(40, 'Sophie', 'Dupont', 'United Kingdom', 'Liverpool', 'L1 1CQ', 'sophie.dupont@example.com', '2023-04-09', 4, 'Flight Attendant', 39, '07800556644'),
+(41, 'Luca', 'Bianchi', 'United Kingdom', 'Bristol', 'BS1 1CR', 'luca.bianchi@example.com', '2023-04-10', 4, 'Student', 18, '07900112233'),
+(42, 'Miguel', 'Rodriguez', 'United Kingdom', 'London', 'E1 1FA', 'miguel.rodriguez@example.com', '2023-04-11', 4, 'Retired', 75, '07700441122'),
+(43, 'Anna', 'Müller', 'United Kingdom', 'London', 'E1 4NS', 'anna.muller@example.com', '2023-04-12', 4, 'Teacher', 39, '07800223344'),
+(44, 'Hans', 'Svensson', 'United Kingdom', 'Cardiff', 'CF1 1CU', 'hans.svensson@example.com', '2023-04-13', 5, 'Flight Attendant', 38, '07900665544'),
+(45, 'Zoe', 'Wilson', 'United Kingdom', 'Edinburgh', 'EH1 1CV', 'zoe.wilson@example.com', '2023-04-14', 5, 'Teacher', 29, '07700223344'),
+(46, 'Carlos', 'Martinez', 'United Kingdom', 'Nottingham', 'NG1 1CW', 'carlos.martinez@example.com', '2023-04-15', 5, 'Student', 23, '07800778899'),
+(47, 'Elena', 'Ivanova', 'United Kingdom', 'Leicester', 'LE1 1CX', 'elena.ivanova@example.com', '2023-04-16', 5, 'Nurse', 30, '07900997788'),
+(48, 'Samir', 'Khan', 'United Kingdom', 'London', 'N17 9FD', 'samir.khan@example.com', '2023-04-17', 5, 'Weatherman', 55, '07700446699'),
+(49, 'Laura', 'Gonzalez', 'United Kingdom', 'London', 'W1 5UD', 'laura.gonzalez@example.com', '2023-04-18', 6, 'Accountant', 58, '07800992233'),
+(50, 'Sebastian', 'Andersson', 'United Kingdom', 'Birmingham', 'B1 1DA', 'sebastian.andersson@example.com', '2023-04-19', 6, 'Architect', 64, '07900554433');
+
+-- Plans
+INSERT INTO Plans (Plan_ID, Plan_Name, Data_Allowance, Talk_Time, Texts, Price)
+VALUES
+(1, 'Student Plan', 5, 500, 500, 24.99),
+(2, 'International Plan', 5, 300, 300, 39.99),
+(3, 'Business Plan', 50, 5000, 5000, 149.99),
+(4, 'Pay-as-you-go', 1, 100, 100, 9.99),
+(5, 'Basic Plan', 2, 200, 200, 20.99),
+(6, 'Family Plan', 20, 2000, 2000, 79.99);
+
+
+-- Top-Up Transactions
+INSERT INTO TopUpTransactions (Transaction_ID, User_ID, Amount, Date)
+VALUES
+(1, 1, 30.00, '2023-03-05'),
+(2, 2, 25.00, '2023-03-10'),
+(3, 3, 50.00, '2023-03-15'),
+(4, 4, 40.00, '2023-03-20'),
+(5, 5, 35.00, '2023-03-25'),
+(6, 6, 30.00, '2022-03-30'),
+(7, 7, 45.00, '2023-04-05'),
+(8, 8, 20.00, '2023-04-05'),
+(9, 9, 55.00, '2023-04-05'),
+(10, 10, 15.00, '2023-04-20'),
+(11, 11, 25.00, '2023-04-25'),
+(12, 12, 60.00, '2023-05-02'),
+(13, 13, 10.00, '2023-05-07'),
+(14, 14, 40.00, '2023-05-12'),
+(15, 15, 70.00, '2023-05-18'),
+(16, 16, 5.00, '2023-05-23'),
+(17, 17, 35.00, '2023-05-28'),
+(18, 18, 50.00, '2023-06-07'),
+(19, 19, 15.00, '2023-06-07'),
+(20, 20, 60.00, '2023-06-12'),
+(21, 21, 30.00, '2023-06-17'),
+(22, 22, 40.00, '2023-06-22'),
+(23, 23, 25.00, '2023-06-27'),
+(24, 24, 35.00, '2023-07-03'),
+(25, 25, 20.00, '2022-07-08'),
+(26, 26, 15.00, '2023-07-13'),
+(27, 27, 50.00, '2022-07-18'),
+(28, 28, 45.00, '2023-07-23'),
+(29, 29, 30.00, '2023-07-28'),
+(30, 30, 55.00, '2023-08-02'),
+(31, 31, 25.00, '2023-08-07'),
+(32, 32, 40.00, '2023-08-12'),
+(33, 33, 20.00, '2023-08-17'),
+(34, 34, 10.00, '2022-08-22'),
+(35, 35, 30.00, '2022-08-27'),
+(36, 36, 35.00, '2022-09-02'),
+(37, 37, 60.00, '2023-09-07'),
+(38, 38, 15.00, '2023-09-12'),
+(39, 39, 70.00, '2023-09-17'),
+(40, 40, 40.00, '2023-09-22'),
+(41, 41, 50.00, '2023-09-27'),
+(42, 42, 25.00, '2023-10-02'),
+(43, 43, 30.00, '2023-10-07'),
+(44, 44, 65.00, '2023-10-12'),
+(45, 45, 15.00, '2023-10-17'),
+(46, 46, 20.00, '2023-10-22'),
+(47, 47, 35.00, '2023-10-27'),
+(48, 48, 10.00, '2023-11-01'),
+(49, 49, 45.00, '2023-11-06'),
+(50, 50, 30.00, '2023-11-11');
+
+-- Call Records with UK Cellphone Numbers
+INSERT INTO CallRecords (Call_ID, Caller_Number, Receiver_Number, Call_Duration, Call_Date)
+VALUES
+(1, (SELECT Cellphone_Number FROM Users WHERE User_ID = 1), '07700000006', 150, '2023-03-10'),
+(2, (SELECT Cellphone_Number FROM Users WHERE User_ID = 2), '07700000006', 210, '2023-03-11'),
+(3, (SELECT Cellphone_Number FROM Users WHERE User_ID = 3), '07700000006', 90, '2023-03-12'),
+(4, (SELECT Cellphone_Number FROM Users WHERE User_ID = 4), '07700000005', 120, '2023-03-13'),
+(5, (SELECT Cellphone_Number FROM Users WHERE User_ID = 5), '07700000006', 180, '2023-03-14'),
+(6, (SELECT Cellphone_Number FROM Users WHERE User_ID = 6), '07700000035', 220, '2023-03-15'),
+(7, (SELECT Cellphone_Number FROM Users WHERE User_ID = 7), '07700000005', 100, '2023-03-16'),
+(8, (SELECT Cellphone_Number FROM Users WHERE User_ID = 8), '07700000005', 160, '2023-03-17'),
+(9, (SELECT Cellphone_Number FROM Users WHERE User_ID = 9), '07700000011', 130, '2023-03-18'),
+(10, (SELECT Cellphone_Number FROM Users WHERE User_ID = 10), '07700000011', 190, '2023-03-19'),
+(11, (SELECT Cellphone_Number FROM Users WHERE User_ID = 1), '07700000011', 110, '2023-03-20'),
+(12, (SELECT Cellphone_Number FROM Users WHERE User_ID = 2), '07700000005', 140, '2023-03-21'),
+(13, (SELECT Cellphone_Number FROM Users WHERE User_ID = 3), '07700000011', 230, '2023-03-22'),
+(14, (SELECT Cellphone_Number FROM Users WHERE User_ID = 4), '07700000005', 160, '2023-03-23'),
+(15, (SELECT Cellphone_Number FROM Users WHERE User_ID = 5), '07700000011', 200, '2023-03-24'),
+(16, (SELECT Cellphone_Number FROM Users WHERE User_ID = 6), '07700000005', 190, '2023-03-25'),
+(17, (SELECT Cellphone_Number FROM Users WHERE User_ID = 7), '07700000011', 140, '2023-03-26'),
+(18, (SELECT Cellphone_Number FROM Users WHERE User_ID = 8), '07700000011', 120, '2023-03-27'),
+(19, (SELECT Cellphone_Number FROM Users WHERE User_ID = 9), '07700000005', 110, '2023-03-28'),
+(20, (SELECT Cellphone_Number FROM Users WHERE User_ID = 10), '07700000006', 100, '2023-03-29'),
+(21, (SELECT Cellphone_Number FROM Users WHERE User_ID = 1), '07700000011', 90, '2023-03-30'),
+(22, (SELECT Cellphone_Number FROM Users WHERE User_ID = 2), '07700000005', 180, '2023-03-31'),
+(23, (SELECT Cellphone_Number FROM Users WHERE User_ID = 3), '07700000011', 210, '2023-04-01'),
+(24, (SELECT Cellphone_Number FROM Users WHERE User_ID = 4), '07700000005', 110, '2023-04-02'),
+(25, (SELECT Cellphone_Number FROM Users WHERE User_ID = 5), '07700000005', 160, '2023-04-03'),
+(26, (SELECT Cellphone_Number FROM Users WHERE User_ID = 6), '07700000006', 120, '2023-04-04'),
+(27, (SELECT Cellphone_Number FROM Users WHERE User_ID = 7),  '07700000002', 190, '2023-04-05'),
+(28, (SELECT Cellphone_Number FROM Users WHERE User_ID = 8), '07700000006', 170, '2023-04-06'),
+(29, (SELECT Cellphone_Number FROM Users WHERE User_ID = 9), '07700000011', 140, '2023-04-07'),
+(30, (SELECT Cellphone_Number FROM Users WHERE User_ID = 10), '07700000006', 200, '2023-04-08'),
+(31, (SELECT Cellphone_Number FROM Users WHERE User_ID = 1),  '07700000002', 220, '2023-04-09'),
+(32, (SELECT Cellphone_Number FROM Users WHERE User_ID = 2), '07700000011', 130, '2023-04-10'),
+(33, (SELECT Cellphone_Number FROM Users WHERE User_ID = 3), '07700000011', 180, '2023-04-11'),
+(34, (SELECT Cellphone_Number FROM Users WHERE User_ID = 4),  '07700000002', 160, '2023-04-12'),
+(35, (SELECT Cellphone_Number FROM Users WHERE User_ID = 5), '07700000006', 110, '2023-04-13'),
+(36, (SELECT Cellphone_Number FROM Users WHERE User_ID = 6),  '07700000002', 220, '2023-04-14'),
+(37, (SELECT Cellphone_Number FROM Users WHERE User_ID = 7), '07700000006', 190, '2023-04-15'),
+(38, (SELECT Cellphone_Number FROM Users WHERE User_ID = 8),  '07700000002', 170, '2023-04-16'),
+(39, (SELECT Cellphone_Number FROM Users WHERE User_ID = 9), '07700000005', 140, '2023-04-17'),
+(40, (SELECT Cellphone_Number FROM Users WHERE User_ID = 10), '07700000006', 200, '2023-04-18'),
+(41, (SELECT Cellphone_Number FROM Users WHERE User_ID = 1), '07700000005', 220, '2023-04-19'),
+(42, (SELECT Cellphone_Number FROM Users WHERE User_ID = 2), '07700000005', 130, '2023-04-20'),
+(43, (SELECT Cellphone_Number FROM Users WHERE User_ID = 3), '07700000005', 180, '2023-04-21'),
+(44, (SELECT Cellphone_Number FROM Users WHERE User_ID = 4),  '07700000002', 160, '2023-04-22'),
+(45, (SELECT Cellphone_Number FROM Users WHERE User_ID = 5), '07700000006', 110, '2023-04-23'),
+(46, (SELECT Cellphone_Number FROM Users WHERE User_ID = 6),  '07700000002', 220, '2023-04-24'),
+(47, (SELECT Cellphone_Number FROM Users WHERE User_ID = 7), '07700000006', 190, '2023-04-25'),
+(48, (SELECT Cellphone_Number FROM Users WHERE User_ID = 8), '07700000005', 170, '2023-04-26'),
+(49, (SELECT Cellphone_Number FROM Users WHERE User_ID = 9), '07700000002', 140, '2023-04-27'),
+(50, (SELECT Cellphone_Number FROM Users WHERE User_ID = 10), '07700000002', 200, '2023-04-28');
+
+INSERT INTO MessageRecords (Message_ID, Sender_Number, Receiver_Number, Message_Date)
+VALUES
+(1, '07700000001', '07700000002', '2023-03-01 08:15:00'),
+(2, '07700000002', '07700000003', '2023-03-02 09:20:00'),
+(3, '07700000003', '07700000004', '2023-03-03 10:25:00'),
+(4, '07700000004', '07700000005', '2023-03-04 11:30:00'),
+(5, '07700000005', '07700000006', '2023-03-05 12:35:00'),
+(6, '07700000006', '07700000007', '2023-03-06 13:40:00'),
+(7, '07700000007', '07700000008', '2023-03-07 14:45:00'),
+(8, '07700000008', '07700000009', '2023-03-08 15:50:00'),
+(9, '07700000009', '07700000010', '2023-03-09 16:55:00'),
+(10, '07700000010', '07700000001', '2023-03-10 17:00:00'),
+(11, '07700000011', '07700000012', '2023-03-11 18:05:00'),
+(12, '07700000012', '07700000013', '2023-03-12 19:10:00'),
+(13, '07700000013', '07700000014', '2023-03-13 20:15:00'),
+(14, '07700000014', '07700000015', '2023-03-14 21:20:00'),
+(15, '07700000015', '07700000016', '2023-03-15 22:25:00'),
+(16, '07700000016', '07700000017', '2023-03-16 23:30:00'),
+(17, '07700000017', '07700000018', '2023-03-17 00:35:00'),
+(18, '07700000018', '07700000019', '2023-03-18 01:40:00'),
+(19, '07700000019', '07700000020', '2023-03-19 02:45:00'),
+(20, '07700000020', '07700000011', '2023-03-20 03:50:00'),
+(21, '07700000021', '07700000022', '2023-03-21 04:55:00'),
+(22, '07700000022', '07700000023', '2023-03-22 05:00:00'),
+(23, '07700000023', '07700000024', '2023-03-23 06:05:00'),
+(24, '07700000024', '07700000025', '2023-03-24 07:10:00'),
+(25, '07700000025', '07700000026', '2023-03-25 08:15:00'),
+(26, '07700000026', '07700000027', '2023-03-26 09:20:00'),
+(27, '07700000027', '07700000028', '2023-03-27 10:25:00'),
+(28, '07700000028', '07700000029', '2023-03-28 11:30:00'),
+(29, '07700000029', '07700000030', '2023-03-29 12:35:00'),
+(30, '07700000030', '07700000021', '2023-03-30 13:40:00'),
+(31, '07700000031', '07700000032', '2023-03-31 14:45:00'),
+(32, '07700000032', '07700000033', '2023-04-01 15:50:00'),
+(33, '07700000033', '07700000034', '2023-04-02 16:55:00'),
+(34, '07700000034', '07700000035', '2023-04-03 17:00:00'),
+(35, '07700000035', '07700000036', '2023-04-04 18:05:00'),
+(36, '07700000036', '07700000037', '2023-04-05 19:10:00'),
+(37, '07700000037', '07700000038', '2023-04-06 20:15:00'),
+(38, '07700000038', '07700000039', '2023-04-07 21:20:00'),
+(39, '07700000039', '07700000040', '2023-04-08 22:25:00'),
+(40, '07700000040', '07700000031', '2023-04-09 23:30:00'),
+(41, '07700000041', '07700000042', '2023-04-10 00:35:00'),
+(42, '07700000042', '07700000043', '2023-04-11 01:40:00'),
+(43, '07700000043', '07700000044', '2023-04-12 02:45:00'),
+(44, '07700000044', '07700000045', '2023-04-13 03:50:00'),
+(45, '07700000045', '07700000046', '2023-04-14 04:55:00'),
+(46, '07700000046', '07700000047', '2023-04-15 05:00:00'),
+(47, '07700000047', '07700000048', '2023-04-16 06:05:00'),
+(48, '07700000048', '07700000049', '2023-04-17 07:10:00'),
+(49, '07700000049', '07700000050', '2023-04-18 08:15:00'),
+(50, '07700000050', '07700000041', '2023-04-19 09:20:00');
+
+-- Network Towers
+INSERT INTO NetworkTowers (Tower_ID, Location, Capacity, Status)
+VALUES
+(1, 'London Central Tower', 500, 'Operational'),
+(2, 'Manchester Suburban Tower', 300, 'Operational'),
+(3, 'Birmingham Rural Tower', 100, 'Operational'),
+(4, 'Edinburgh City Center Tower', 400, 'Operational'),
+(5, 'Glasgow Mountain Tower', 200, 'Operational'),
+(6, 'Liverpool Coastal Tower', 250, 'Operational'),
+(7, 'Bristol Industrial Park Tower', 350, 'Operational'),
+(8, 'Cardiff Business District Tower', 450, 'Operational'),
+(9, 'Heathrow Airport Tower', 300, 'Operational'),
+(10, 'Birmingham Shopping Mall Tower', 200, 'Operational'),
+(11, 'M1 Highway Tower', 150, 'Operational'),
+(12, 'Edinburgh University Tower', 200, 'Operational'),
+(13, 'Tech Park Tower, London', 300, 'Operational'),
+(14, 'Manchester Residential Tower', 400, 'Operational'),
+(15, 'Tourist Area Tower, Edinburgh', 250, 'Operational'),
+(16, 'Government District Tower, London', 350, 'Operational'),
+(17, 'Sports Stadium Tower, Manchester', 300, 'Operational'),
+(18, 'Leeds Industrial Area Tower', 200, 'Operational'),
+(19, 'Countryside Tower, Birmingham', 150, 'Operational'),
+(20, 'London North Downtown Tower', 100, 'Operational'),
+(21, 'Leicester Central Tower', 500, 'Operational'),
+(22, 'Newcastle Suburban Tower', 300, 'Operational'),
+(23, 'Oxford Rural Tower', 100, 'Operational'),
+(24, 'Sheffield City Center Tower', 400, 'Operational'),
+(25, 'Nottingham Mountain Tower', 200, 'Operational'),
+(26, 'Norwich Coastal Tower', 250, 'Operational'),
+(27, 'Cambridge Industrial Park Tower', 350, 'Operational'),
+(28, 'Brighton Business District Tower', 450, 'Operational'),
+(29, 'Belfast Airport Tower', 300, 'Operational'),
+(30, 'Leeds Shopping Mall Tower', 200, 'Operational'),
+(31, 'M6 Highway Tower', 150, 'Operational'),
+(32, 'Glasgow University Tower', 200, 'Operational'),
+(33, 'Tech Park Tower, Manchester', 300, 'Operational'),
+(34, 'Sheffield Residential Tower', 400, 'Operational'),
+(35, 'Tourist Area Tower, Birmingham', 250, 'Operational'),
+(36, 'Government District Tower, Edinburgh', 350, 'Operational'),
+(37, 'Sports Stadium Tower, Cardiff', 300, 'Operational'),
+(38, 'Manchester Industrial Area Tower', 200, 'Operational'),
+(39, 'Countryside Tower, Glasgow', 150, 'Operational'),
+(40, 'Liverpool North Downtown Tower', 100, 'Operational'),
+(41, 'Bristol Central Tower', 500, 'Operational'),
+(42, 'Reading Suburban Tower', 300, 'Operational'),
+(43, 'Leeds Rural Tower', 100, 'Operational'),
+(44, 'Brighton City Center Tower', 400, 'Operational'),
+(45, 'Newcastle Mountain Tower', 200, 'Operational'),
+(46, 'Cardiff Coastal Tower', 250, 'Operational'),
+(47, 'Belfast Industrial Park Tower', 350, 'Operational'),
+(48, 'Edinburgh Business District Tower', 450, 'Operational'),
+(49, 'Glasgow Airport Tower', 300, 'Operational'),
+(50, 'Birmingham Shopping Mall Tower', 200, 'Operational');
+
+-- My Data
+INSERT INTO MyData (User_ID, Data_Usage, Call_Duration, Last_Activity_Date, Data_Usage_Details, Call_History_Details)
+VALUES
+(1, 500, 120, '2023-03-12', 'Browsing, streaming', 'Calls to family and friends'),
+(2, 300, 90, '2023-03-12', 'Texting, social media', 'Calls for work'),
+(3, 800, 240, '2023-03-12', 'Video calls, streaming', 'Client calls and meetings'),
+(4, 400, 180, '2023-03-12', 'Email, navigation', 'Conference calls'),
+(5, 600, 150, '2023-03-12', 'Social Media', 'Personal calls'),
+(6, 200, 60, '2023-03-12', 'Social Media', 'Calls to friends'),
+(7, 700, 210, '2023-03-12', 'Social Media', 'Business calls'),
+(8, 100, 30, '2023-03-12', 'Social Media', 'Short calls'),
+(9, 900, 270, '2023-03-12', 'Streaming, data-heavy apps', 'Important calls'),
+(10, 50, 15, '2023-03-12', 'Social Media', 'Casual calls'),
+(1, 500, 120, '2023-03-12', 'Social Media', 'Calls to family and friends'),
+(2, 300, 90, '2023-03-12', 'Social Media', 'Calls for work'),
+(3, 800, 240, '2023-03-12', 'Video calls', 'Client calls and meetings'),
+(4, 400, 180, '2023-03-12', 'Email browsing', 'Conference calls'),
+(5, 600, 150, '2023-03-12', 'Video calls', 'Personal calls'),
+(6, 200, 60, '2023-03-12', 'Video calls', 'Calls to friends'),
+(7, 700, 210, '2023-03-12', 'Video calls', 'Business calls'),
+(8, 100, 30, '2023-03-12', 'Video calls', 'Short calls'),
+(9, 900, 270, '2023-03-12', 'Streaming, data-heavy apps', 'Important calls'),
+(10, 50, 15, '2023-03-12', 'Video calls', 'Casual calls'),
+(11, 450, 135, '2023-03-12', 'Video calls', 'Client calls'),
+(12, 350, 105, '2023-03-12', 'Email browsing', 'Meetings'),
+(13, 250, 75, '2023-03-12', 'Email browsing', 'Family calls'),
+(14, 700, 210, '2023-03-12', 'Email browsing', 'Business calls'),
+(15, 120, 36, '2023-03-12', 'Email browsing', 'Short calls'),
+(16, 550, 165, '2023-03-12', 'Email browsing', 'Client calls'),
+(17, 420, 126, '2023-03-12', 'Email, light browsing', 'Meetings'),
+(18, 300, 90, '2023-03-12', 'Chat, data-light apps', 'Family calls'),
+(19, 800, 240, '2023-03-12', 'Chat, data-light apps', 'Client calls and meetings'),
+(20, 30, 9, '2023-03-12', 'Chat, data-light apps', 'Casual calls'),
+(21, 500, 120, '2023-03-12', 'Chat, data-light apps', 'Calls to family and friends'),
+(22, 300, 90, '2023-03-12', 'Chat, data-light apps', 'Calls for work'),
+(23, 800, 240, '2023-03-12', 'Chat, data-light apps', 'Client calls and meetings'),
+(24, 400, 180, '2023-03-12', 'Email, navigation', 'Conference calls'),
+(25, 600, 150, '2023-03-12', 'Social media, video', 'Personal calls'),
+(26, 200, 60, '2023-03-12', 'Browsing, chat', 'Calls to friends'),
+(27, 700, 210, '2023-03-12', 'Video calls, messaging', 'Business calls'),
+(28, 100, 30, '2023-03-12', 'Email, light browsing', 'Short calls'),
+(29, 900, 270, '2023-03-12', 'Streaming, data-heavy apps', 'Important calls'),
+(30, 50, 15, '2023-03-12', 'Minimal data usage', 'Casual calls'),
+(31, 450, 135, '2023-03-12', 'Social media, email', 'Client calls'),
+(32, 350, 105, '2023-03-12', 'Email, light browsing', 'Meetings'),
+(33, 250, 75, '2023-03-12', 'Chat, data-light apps', 'Family calls'),
+(34, 700, 210, '2023-03-12', 'Video calls, messaging', 'Business calls'),
+(35, 120, 36, '2023-03-12', 'Email, light browsing', 'Short calls'),
+(36, 550, 165, '2023-03-12', 'Social media, email', 'Client calls'),
+(37, 420, 126, '2023-03-12', 'Email, light browsing', 'Meetings'),
+(38, 300, 90, '2023-03-12', 'Chat, data-light apps', 'Family calls'),
+(39, 800, 240, '2023-03-12', 'Video calls, streaming', 'Client calls and meetings'),
+(40, 30, 9, '2023-03-12', 'Minimal data usage', 'Casual calls');
+
+
+-- Insert 50 sample data entries into the CustomerReviews table
+INSERT INTO CustomerReviews (User_ID, Product_ID, Review_Text, Review_Date, Rating)
+VALUES
+    (1, 101, 'Sprint mobile plan is excellent!', '2023-03-01', 5),
+    (2, 102, 'Not as expected from Sprint, very disappointed.', '2023-03-02', 1),
+    (3, 103, 'Sprints data service is average, it does the job.', '2023-03-03', 3),
+    (4, 104, 'Superb customer support at Sprint, highly recommended.', '2023-03-04', 5),
+    (5, 105, 'Sprints network could be better, but it works.', '2023-03-05', 2),
+    (6, 106, 'Best decision I made by choosing Sprint!', '2023-03-06', 5),
+    (7, 107, 'Terrible experience with Sprint, complete waste of money.', '2023-03-07', 1),
+    (8, 108, 'Sprints services are okay, not too impressed.', '2023-03-08', 3),
+    (9, 109, 'Good value for the price with Sprint.', '2023-03-09', 4),
+    (10, 110, 'Not recommended, Sprint has poor quality in my area.', '2023-03-10', 1),
+    (11, 111, 'Im satisfied with my Sprint plan.', '2023-03-11', 4),
+    (12, 112, 'Sprints network works perfectly, no complaints.', '2023-03-12', 5),
+    (13, 113, 'Not what I expected from Sprint, but its fine.', '2023-03-13', 3),
+    (14, 114, 'Outstanding experience with Sprint, exceeded my expectations.', '2023-03-14', 5),
+    (15, 115, 'Decent quality services from Sprint, reasonable price.', '2023-03-15', 4),
+    (16, 116, 'I regret choosing Sprint, total waste.', '2023-03-16', 1),
+    (17, 117, 'Sprints services are not bad, but not great either.', '2023-03-17', 3),
+    (18, 118, 'Impressive mobile plans from Sprint, worth every penny.', '2023-03-18', 5),
+    (19, 119, 'I love sprint, great network.', '2023-03-19', 5),
+    (20, 120, 'Sprints services met my expectations, works well.', '2023-03-20', 4),
+    (21, 121, 'Excellent quality network and performance from Sprint.', '2023-03-21', 5),
+    (22, 122, 'The worst experience with Sprint, not what I expected.', '2023-03-22', 1),
+    (23, 123, 'Sprints network is not the best, but its okay.', '2023-03-23', 3),
+    (24, 124, 'Top-notch customer support at Sprint, highly recommended.', '2023-03-24', 5),
+    (25, 125, 'Sprints network could be better, not fully satisfied.', '2023-03-25', 2),
+    (26, 126, 'Great value for the price with Sprint, happy with it.', '2023-03-26', 4),
+    (27, 127, 'Total disappointment with Sprint, do not buy.', '2023-03-27', 1),
+    (28, 128, 'Sprints services are exceptional.', '2023-03-28', 3),
+    (29, 129, 'Good purchase with Sprint, serves its purpose.', '2023-03-29', 4),
+    (30, 130, 'Avoid Sprints network, its terrible.', '2023-03-30', 1),
+    (31, 131, 'Very satisfied with my choice of Sprint.', '2023-03-31', 5),
+    (32, 132, 'Sprint network is highly durable and reliable.', '2023-04-01', 5),
+    (33, 133, 'Not worth the money with Sprint, disappointed.', '2023-04-02', 2),
+    (34, 134, 'Reasonable quality for the price from Sprint.', '2023-04-03', 3),
+    (35, 135, 'Sprints services exceeded my expectations, fantastic!', '2023-04-03', 5),
+    (1, 101, 'Sprint mobile plan is excellent!', '2023-03-01', 5),
+    (2, 102, 'Not as expected from Sprint, very disappointed.', '2023-03-02', 1),
+    (3, 103, 'Sprints data service is average, it does the job.', '2023-03-03', 3),
+    (4, 104, 'Superb customer support at Sprint, highly recommended.', '2023-03-04', 5),
+    (5, 105, 'Sprints network could be better, but it works.', '2023-03-05', 2),
+    (6, 106, 'Best decision I made by choosing Sprint!', '2023-03-06', 5),
+    (7, 107, 'Terrible experience with Sprint, complete waste of money.', '2023-03-07', 1),
+    (8, 108, 'Sprints services are okay, not too impressed.', '2023-03-08', 3),
+    (9, 109, 'Good value for the price with Sprint.', '2023-03-09', 4),
+    (10, 110, 'Not recommended, Sprint has poor quality in my area.', '2023-03-10', 1),
+    (11, 111, 'Im satisfied with my Sprint plan.', '2023-03-11', 4),
+    (12, 112, 'Sprints network works perfectly, no complaints.', '2023-03-12', 5),
+    (13, 113, 'Not what I expected from Sprint, but its fine.', '2023-03-13', 3),
+    (14, 114, 'Outstanding experience with Sprint, exceeded my expectations.', '2023-03-14', 5),
+    (15, 115, 'Decent quality services from Sprint, reasonable price.', '2023-03-15', 4);
+
+-- Insert 50 sample data entries into RoamingLocations
+INSERT INTO RoamingLocations (User_ID, Country, City, Latitude, Longitude, Roaming_Start, Roaming_End)
+VALUES
+(1, 'France', 'Paris', 48.8566, 2.3522, '2023-03-05 09:00:00', '2023-03-05 18:00:00'),
+(2, 'Spain', 'Barcelona', 41.3851, 2.1734, '2023-03-10 10:30:00', '2023-03-10 20:00:00'),
+(3, 'Italy', 'Rome', 41.9028, 12.4964, '2023-03-15 08:45:00', '2023-03-15 19:30:00'),
+(4, 'USA', 'New York', 40.7128, -74.0060, '2023-03-20 11:15:00', '2023-03-20 21:30:00'),
+(5, 'Italy', 'Rome', 35.682839, 139.759455, '2023-03-25 07:20:00', '2023-03-25 17:45:00'),
+(6, 'Germany', 'Berlin', 52.5200, 13.4050, '2023-03-30 08:30:00', '2023-03-30 19:15:00'),
+(7, 'Canada', 'Toronto', 43.6532, -79.3832, '2023-04-05 12:00:00', '2023-04-05 22:15:00'),
+(8, 'Germany', 'Berlin', -33.8651, 151.2095, '2023-04-10 10:00:00', '2023-04-10 21:00:00'),
+(9, 'Brazil', 'Rio de Janeiro', -22.9068, -43.1729, '2023-04-15 14:30:00', '2023-04-15 23:00:00'),
+(10, 'Germany', 'Berlin', 51.5074, -0.1278, '2023-04-20 11:00:00', '2023-04-20 21:45:00'),
+(11, 'France', 'Marseille', 43.2965, 5.3698, '2023-04-25 09:45:00', '2023-04-25 20:30:00'),
+(12, 'Germany', 'Berlin', 39.9042, 116.4074, '2023-05-02 10:15:00', '2023-05-02 22:30:00'),
+(13, 'Germany', 'Berlin', 52.5200, 13.4050, '2023-05-07 13:00:00', '2023-05-07 23:30:00'),
+(14, 'South Korea', 'Seoul', 37.5665, 126.9780, '2023-05-12 11:30:00', '2023-05-12 20:15:00'),
+(15, 'Netherlands', 'Amsterdam', 52.3667, 4.8945, '2023-05-18 09:00:00', '2023-05-18 18:30:00'),
+(16, 'Greece', 'Athens', 37.9838, 23.7275, '2023-05-23 07:45:00', '2023-05-23 17:00:00'),
+(17, 'Portugal', 'Lisbon', 38.7223, -9.1393, '2023-05-28 08:30:00', '2023-05-28 19:45:00'),
+(18, 'Brazil', 'Brasilia', -34.6118, -58.4173, '2023-06-02 10:00:00', '2023-06-02 21:15:00'),
+(19, 'Brazil', 'Rio de Janeiro', 1.3521, 103.8198, '2023-06-07 09:30:00', '2023-06-07 19:45:00'),
+(20, 'Russia', 'Moscow', 55.7558, 37.6176, '2023-06-12 10:15:00', '2023-06-12 21:30:00'),
+(21, 'Sweden', 'Stockholm', 59.3293, 18.0686, '2023-06-17 07:45:00', '2023-06-17 16:30:00'),
+(22, 'Switzerland', 'Zurich', 47.3769, 8.5417, '2023-06-22 13:30:00', '2023-06-22 23:45:00'),
+(48, 'United Arab Emirates', 'Dubai', 25.276987, 55.296249, '2023-10-25 10:15:00', '2023-10-25 21:30:00'),
+(49, 'Kenya', 'Nairobi', -1.286389, 36.817223, '2023-11-05 09:30:00', '2023-11-05 19:45:00'),
+(50, 'New Zealand', 'Auckland', -36.848460, 174.763332, '2023-11-10 10:15:00', '2023-11-10 21:30:00'),
+(23, 'Austria', 'Vienna', 48.2082, 16.3738, '2023-06-27 12:15:00', '2023-06-27 22:30:00'),
+(24, 'Ireland', 'Dublin', 53.349805, -6.26031, '2023-07-02 11:30:00', '2023-07-02 20:45:00'),
+(25, 'Thailand', 'Bangkok', 13.7563, 100.5018, '2023-07-07 09:00:00', '2023-07-07 19:15:00'),
+(26, 'Turkey', 'Istanbul', 41.0082, 28.9784, '2023-07-12 07:45:00', '2023-07-12 16:30:00'),
+(27, 'Egypt', 'Cairo', 30.0444, 31.2357, '2023-07-17 14:30:00', '2023-07-17 23:45:00'),
+(28, 'New Zealand', 'Wellington', -41.2865, 174.7762, '2023-07-22 10:15:00', '2023-07-22 20:30:00'),
+(29, 'Norway', 'Oslo', 59.9139, 10.7522, '2023-07-27 11:00:00', '2023-07-27 21:15:00'),
+(30, 'Denmark', 'Copenhagen', 55.6761, 12.5683, '2023-08-01 12:00:00', '2023-08-01 22:15:00'),
+(31, 'Finland', 'Helsinki', 60.1699, 24.9384, '2023-08-06 08:45:00', '2023-08-06 19:00:00'),
+(32, 'Norway', 'Oslo', -33.4489, -70.6693, '2023-08-11 09:30:00', '2023-08-11 20:45:00'),
+(33, 'Denmark', 'Copenhagen', -33.9249, 18.4241, '2023-08-16 08:15:00', '2023-08-16 17:30:00'),
+(34, 'Norway', 'Oslo', 50.8503, 4.3517, '2023-08-21 10:00:00', '2023-08-21 21:15:00'),
+(35, 'Poland', 'Warsaw', 52.2297, 21.0122, '2023-08-26 09:45:00', '2023-08-26 19:00:00'),
+(36, 'Indonesia', 'Jakarta', -6.2088, 106.8456, '2023-08-31 07:30:00', '2023-08-31 16:45:00'),
+(37, 'Malaysia', 'Kuala Lumpur', 3.1390, 101.6869, '2023-09-05 12:00:00', '2023-09-05 22:15:00'),
+(38, 'Nigeria', 'Lagos', 6.5244, 3.3792, '2023-09-10 11:30:00', '2023-09-10 20:45:00'),
+(39, 'Hong Kong', 'Hong Kong', 22.3193, 114.1694, '2023-09-15 10:15:00', '2023-09-15 21:30:00'),
+(40, 'Philippines', 'Manila', 14.5995, 120.9842, '2023-09-20 08:45:00', '2023-09-20 19:00:00'),
+(41, 'Czech Republic', 'Prague', 50.0755, 14.4378, '2023-09-25 09:30:00', '2023-09-25 19:45:00'),
+(42, 'South Africa', 'Johannesburg', -26.2041, 28.0473, '2023-09-30 08:15:00', '2023-09-30 17:30:00'),
+(43, 'Canada', 'Vancouver', 49.2827, -123.1207, '2023-10-05 10:00:00', '2023-10-05 20:15:00'),
+(44, 'Iceland', 'Reykjavik', 64.1265, -21.8174, '2023-10-10 07:45:00', '2023-10-10 16:30:00'),
+(45, 'Saudi Arabia', 'Riyadh', 24.7136, 46.6753, '2023-10-15 14:30:00', '2023-10-15 23:45:00'),
+(46, 'Ghana', 'Accra', 5.6037, -0.186964, '2023-10-20 11:30:00', '2023-10-20 20:45:00'),
+(47, 'United Arab Emirates', 'Dubai', 25.276987, 55.296249, '2023-10-25 10:15:00', '2023-10-25 21:30:00'),
+(48, 'Germany', 'Munich', 48.1351, 11.5820, '2023-10-30 12:00:00', '2023-10-30 22:15:00'),
+(49, 'Kenya', 'Nairobi', -1.286389, 36.817223, '2023-11-05 09:30:00', '2023-11-05 19:45:00'),
+(50, 'Canada', 'Vancouver', 49.2827, -123.1207, '2023-11-10 10:15:00', '2023-11-10 21:30:00');
+
+-- Cancellation Reasons
+INSERT INTO CancellationReasons (Reason_ID, Customer_ID, Cancellation_Date, Reason)
+VALUES
+(1,1, '2023-01-15', 'Network coverage issues in my area.'),
+(2,2, '2023-02-20', 'Network coverage issues in my area.'),
+(3,3, '2023-03-10', 'Network coverage issues in my area.'),
+(4,4, '2023-04-05', 'Network coverage issues in my area.'),
+(5,5, '2023-05-12', 'Financial constraints'),
+(6,6, '2023-06-17', 'Relocated to a different area with no coverage'),
+(7,7, '2023-07-22', 'Network coverage issues in my area.'),
+(8,8, '2023-08-30', 'Network coverage issues in my area.'),
+(9,9, '2023-09-04', 'Network coverage issues in my area.'),
+(10, 10, '2023-10-08', 'Relocated to a different area with no coverage'),
+(11, 11, '2023-11-15', 'Relocated to a different area with no coverage'),
+(12, 12, '2023-12-20', 'Financial constraints'),
+(13, 13, '2024-01-05', 'Financial constraints'),
+(14, 14, '2024-02-12', 'Network coverage issues in my area.'),
+(15,15, '2024-03-18', 'Network coverage issues in my area.'),
+(16, 16, '2024-04-22', 'Coverage gaps during travels.'),
+(17,17,  '2024-05-30', 'Network signal was consistently weak'),
+(18,18, '2024-06-06', 'Network signal was consistently weak'),
+(19,19, '2024-07-12', 'Network coverage issues in my area.'),
+(20,20, '2024-08-18', 'Relocated to a different area with no coverage'),
+(21,21, '2024-09-22', 'Relocated to a different area with no coverage'),
+(22,22, '2024-10-30', 'Technical issues with the device.'),
+(23,23, '2024-11-04', 'Network coverage issues in my area.'),
+(24,24, '2024-12-08', 'Preferred a prepaid plan over a contract.'),
+(25,25, '2025-01-15', 'Network signal was consistently weak.'),
+(26,26, '2025-02-20', 'Network coverage issues in my area.'),
+(27,27, '2025-03-10', 'Network signal was consistently weak'),
+(28,28, '2025-04-05', 'Network signal was consistently weak'),
+(29,29, '2025-05-12', 'Poor customer service experiences.'),
+(30,30, '2025-06-17', 'Poor customer service experiences.'),
+(31,31, '2025-07-22', 'Customer service did not resolve issues.'),
+(32,32,'2025-08-30', 'New job provided company cell phone.'),
+(33,33,'2025-09-04', 'Service plan was no longer competitive.'),
+(34,34, '2025-10-08', 'Poor customer service experiences.'),
+(35,35, '2025-11-15', 'Poor customer service experiences.'),
+(36,36, '2025-12-20', 'Poor customer service experiences.'),
+(37,37, '2026-01-05', 'Network coverage issues in my area.'),
+(38,38, '2026-02-12', 'Relocated to a different area with no coverage'),
+(39,39, '2026-03-18', 'Network coverage issues in my area.'),
+(40,40, '2026-04-22', 'Poor customer service experiences.'),
+(41,41, '2026-05-30', 'Network coverage issues in my area'),
+(42,42,'2026-06-06', 'Network coverage issues in my area'),
+(43,43,'2026-07-12', 'Network coverage issues in my area'),
+(44,44, '2026-08-18', 'Network coverage issues in my area'),
+(45,45, '2026-09-22', 'Network coverage issues in my area.'),
+(46,46, '2026-10-30', 'Network coverage issues in my area'),
+(47,47,'2026-11-04', 'Network coverage issues in my area.'),
+(48,48, '2026-12-08', 'Network coverage issues in my area.'),
+(49,49, '2027-01-15', 'Financial constraints'),
+(50,50, '2027-02-20', 'Financial constraints');
+
+-- Analysis
+
+SELECT Reason, COUNT(*) AS CancellationCount
+FROM CancellationReasons
+GROUP BY Reason
+ORDER BY CancellationCount DESC;
+
+SELECT YEAR(Cancellation_Date) AS Year, MONTH(Cancellation_Date) AS Month, COUNT(*) AS CancellationCount
+FROM CancellationReasons
+GROUP BY Year, Month
+ORDER BY Year, Month;
+
+--
+SELECT Reason FROM CancellationReasons;
+
+-- Count the number of users per plan
+SELECT p.Plan_Name, COUNT(u.User_ID) AS Number_of_Users
+FROM Plans AS p
+LEFT JOIN Users AS u ON p.Plan_ID = u.Plan_ID
+GROUP BY p.Plan_Name;
+
+-- Identify churned customers based on call and message activity
+SELECT cr.Customer_ID
+FROM (
+  SELECT DISTINCT u.User_ID
+  FROM Users u
+  LEFT JOIN CallRecords c ON u.Cellphone_Number = c.Caller_Number
+  LEFT JOIN MessageRecords m ON u.Cellphone_Number = m.Sender_Number
+  WHERE c.Caller_Number IS NULL AND m.Sender_Number IS NULL
+) AS cu
+JOIN CancellationReasons cr ON cu.User_ID = cr.User_ID;
+
+-- Count churned users by City and Post_Code
+SELECT City, Post_Code, COUNT(*) AS Churn_Count
+FROM Users
+WHERE User_ID IN (
+  SELECT DISTINCT u.User_ID
+  FROM Users u
+  LEFT JOIN CallRecords c ON u.Cellphone_Number = c.Caller_Number
+  LEFT JOIN MessageRecords m ON u.Cellphone_Number = m.Sender_Number
+  WHERE c.Caller_Number IS NULL AND m.Sender_Number IS NULL
+)
+GROUP BY City, Post_Code;
