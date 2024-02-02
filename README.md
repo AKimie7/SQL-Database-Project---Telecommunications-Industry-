@@ -84,4 +84,19 @@ My Data - MessageRecords
  
  ![image](https://github.com/AKimie7/SQL-Database-Project---Telecommunications-Industry-/assets/145045818/f04b8e55-ad3f-4fd2-aec9-695ffe910fef)
 
+Bibliography 
+
+Clarke, R. (2014). Regulatory analysis of international mobile ROAMING SERVICES. Telecommunication Development Sector.
+
+Statista. (n.d.). Statista - The Statistics Portal. https://www.statista.com/markets/418/topic/481/telecommunications/
+
+Todt, K. E. (2019). Data Privacy and Protection: What Businesses Should Do. The Cyber Defense Review, 4(2), 39–46. https://www.jstor.org/stable/26843891
+
+Khera, G., & Telecom, E. (2023, August 14). Data protection law: Opportune time for telcos to refresh privacy framework. ETTelecom.com. https://telecom.economictimes.indiatimes.com/blog/data-protection-law-opportune-time-for-telcos-to-refresh-privacy-framework/102716873?redirect=1
+
+Data Sample Generator 
+OpenAI. (2023). ChatGPT (Sep 2021 version) [Large language model]. https://chat.openai.com/chat
+GitHub, Inc. (2023). GitHub Copilot (Version 2023) [Software]. Available at https://github.com/copilot
+
+
 
